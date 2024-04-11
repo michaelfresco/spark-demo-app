@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  application:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    restart: "no"
+    entrypoint: [ "/opt/spark/bin/spark-submit",
+                  "--master",
+                  "local[*]",
+                  "--class",
+                  "StreamingWordCounts",
+                  "/opt/network_count.py",
+                  "netcat",
+                  "9999" ]
+  netcat:
+    build:
+      context: ./nc
+      dockerfile: Dockerfile
+    container_name: cat
+    restart: "no"
+    entrypoint: [ "nc", "-lk", "9999" ]
+    stdin_open: true
+    tty: true
+
